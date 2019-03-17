@@ -90,18 +90,14 @@ class TextObject:
         self.text_func = text_func
         self.color = color
         self.font = pygame.font.SysFont(font_name, font_size)
-        self.bounds = self.get_surface(text_func())
 
     def get_surface(self, text):
         text_surface = self.font.render(text, False, self.color)
-        return text_surface, text_surface.get_rect()
+        return text_surface
 
     def draw(self, surface, centralized=False):
-        text_surface, self.bounds = self.get_surface(self.text_func())
-        if centralized:
-            pos = (self.pos[0] - self.bounds.width // 2, self.pos[1])
-        else:
-            pos = self.pos
+        text_surface = self.get_surface(self.text_func)
+        pos = self.pos
         surface.blit(text_surface, pos)
 
     def get_update(self):
@@ -130,10 +126,10 @@ def check_problems(w, h, objects):
 
 
 def gameOver(Surface):
-    myFont = pygame.font.SysFont('monaco', 72)
+    myFont = pygame.font.SysFont('monaco', 108)
     GOsurf = myFont.render("Game Over", True, (255, 0, 0))
     GOrect = GOsurf.get_rect()
-    GOrect.midtop = (320, 25)
+    GOrect.midtop = (400, 25)
     Surface.blit(GOsurf, GOrect)
     pygame.display.flip()
     time.sleep(4)
@@ -145,6 +141,7 @@ class Game:
     def __init__(self, caption, width, height, frame_rate):
         pygame.init()
         self.score = 0
+        self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
         self.width = width
         self.height = height
         a = 15
@@ -177,6 +174,7 @@ class Game:
     def update(self):
         if self.objects[0].head == (self.objects[1].x, self.objects[1].y):
             self.score += 1
+            self.text = self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
             self.frame_rate += 0.5
             self.objects[0].update()
             self.objects[1].update(self.width, self.height)
@@ -187,6 +185,7 @@ class Game:
     def draw(self):
         for elem in self.objects:
             elem.draw(self.surface)
+        self.text.draw(self.surface)
 
     def run(self):
         while not self.game_over:
