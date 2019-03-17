@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import time
 
 from pygame.rect import Rect
 
@@ -128,6 +129,18 @@ def check_problems(w, h, objects):
     return True
 
 
+def gameOver(Surface):
+    myFont = pygame.font.SysFont('monaco', 72)
+    GOsurf = myFont.render("Game Over", True, (255, 0, 0))
+    GOrect = GOsurf.get_rect()
+    GOrect.midtop = (320, 25)
+    Surface.blit(GOsurf, GOrect)
+    pygame.display.flip()
+    time.sleep(4)
+    pygame.quit()
+    sys.exit()
+
+
 class Game:
     def __init__(self, caption, width, height, frame_rate):
         pygame.init()
@@ -179,6 +192,7 @@ class Game:
             self.surface.fill((244, 164, 96))
 
             if not check_problems(self.width, self.height, self.objects):
+                gameOver(self.surface)
                 break
 
             self.handle_events()
