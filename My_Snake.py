@@ -177,6 +177,7 @@ class Game:
     def update(self):
         if self.objects[0].head == (self.objects[1].x, self.objects[1].y):
             self.score += 1
+            self.frame_rate += 0.5
             self.objects[0].update()
             self.objects[1].update(self.width, self.height)
         else:
