@@ -39,8 +39,8 @@ class Apple(GameObject):
         pygame.draw.rect(surface, self.color, self.bounds)
 
     def update(self, w, h):
-        self.x = random.randrange(1, w - self.a)
-        self.y = random.randrange(1, h - self.a)
+        self.x = random.randrange(0, w//self.a)*self.a
+        self.y = random.randrange(0, h//self.a)*self.a
         self.bounds = Rect(self.x, self.y, self.a, self.a)
 
 
@@ -135,9 +135,9 @@ class Game:
         self.width = width
         self.height = height
         a = 15
-        body_snake = [(width // 3 + a * i, height // 3 + a * i) for i in range(3)]
+        body_snake = [((width//100)*a - a * i, (height//200)*a) for i in range(3)]
         self.objects = [Snake(body_snake, a, 'RIGHT', (0, 255, 0)),
-                        Apple(random.randrange(1, width - a), random.randrange(1, height-a), a, (255, 0, 0))]
+                        Apple(random.randrange(0, width//a)*a, random.randrange(0, height//a)*a, a, (255, 0, 0))]
         self.surface = pygame.display.set_mode((width, height))
         self.frame_rate = frame_rate
         self.game_over = False
@@ -163,6 +163,7 @@ class Game:
 
     def update(self):
         if self.objects[0].head == (self.objects[1].x, self.objects[1].y):
+            self.score += 1
             self.objects[0].update()
             self.objects[1].update(self.width, self.height)
         else:
