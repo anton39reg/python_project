@@ -45,6 +45,13 @@ class Apple(GameObject):
         self.bounds = Rect(self.x, self.y, self.a, self.a)
 
 
+class Bonus_Apple(Apple):
+    def __init__(self, x, y, a, color):
+        Apple.__init__(self, x, y, a, color)
+        self.time = time.time()
+        self.max_time = 5
+
+
 class Snake:
     def __init__(self, list_of_pos, a, direction, color):
         self.head = list_of_pos[0]
@@ -144,14 +151,16 @@ class Game:
         self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
         self.width = width
         self.height = height
-        a = 15
-        body_snake = [((width//100)*a - a * i, (height//200)*a) for i in range(3)]
-        self.objects = [Snake(body_snake, a, 'RIGHT', (0, 255, 0)),
-                        Apple(random.randrange(0, width//a)*a, random.randrange(0, height//a)*a, a, (255, 0, 0))]
+        self.a = 15
+        body_snake = [((width//100)*self.a - self.a * i, (height//200)*self.a) for i in range(3)]
+        self.objects = [Snake(body_snake, self.a, 'RIGHT', (0, 255, 0)),
+                        Apple(random.randrange(0, width//self.a)*self.a, random.randrange(0, height//self.a)*self.a, self.a, (255, 0, 0))]
         self.surface = pygame.display.set_mode((width, height))
         self.frame_rate = frame_rate
         self.game_over = False
         pygame.display.set_caption(caption)
+        self.time = time.time()
+        self.bonus_apple = False
         self.clock = pygame.time.Clock()
 
     def handle_events(self):
@@ -172,13 +181,26 @@ class Game:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     def update(self):
+        flag = True
+        if self.bonus_apple:
+            if self.objects[0].head == (self.objects[-1].x, self.objects[-1].y):
+                self.score += 3
+                self.text = self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
+                self.objects[0].update()
+                self.objects.pop()
+                flag = True
+                self.bonus_apple = False
+            elif time.time() - self.objects[-1].time > self.objects[-1].max_time:
+                self.objects.pop()
+                self.time = time.time()
+                self.bonus_apple = False
         if self.objects[0].head == (self.objects[1].x, self.objects[1].y):
             self.score += 1
             self.text = self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
             self.frame_rate += 0.5
             self.objects[0].update()
             self.objects[1].update(self.width, self.height)
-        else:
+        elif flag:
             self.objects[0].update()
             self.objects[0].delete_tail()
 
@@ -186,6 +208,12 @@ class Game:
         for elem in self.objects:
             elem.draw(self.surface)
         self.text.draw(self.surface)
+
+    def get_bonus_apple(self):
+        if time.time() - self.time > 25:
+            self.time = time.time()
+            self.bonus_apple = True
+            self.objects.append(Bonus_Apple(random.randrange(0, self.width//self.a)*self.a, random.randrange(0, self.height//self.a)*self.a, self.a, (255, 255, 0)))
 
     def run(self):
         while not self.game_over:
@@ -196,6 +224,7 @@ class Game:
                 break
 
             self.handle_events()
+            self.get_bonus_apple()
             self.update()
             self.draw()
 
