@@ -56,7 +56,7 @@ class Snake:
     def __init__(self, list_of_pos, side_of_square, direction, color):
         self.head = list_of_pos[0]
         self.body = []
-        self.a = side_of_square
+        self.side_of_square = side_of_square
         self.color = color
         for i in list_of_pos:
             self.body.append(Square(i[0], i[1], side_of_square, self.color))
@@ -68,14 +68,14 @@ class Snake:
 
     def update(self):
         if self.direction == 'RIGHT':
-            self.head = self.head[0] + self.a, self.head[1]
+            self.head = self.head[0] + self.side_of_square, self.head[1]
         elif self.direction == 'LEFT':
-            self.head = self.head[0] - self.a, self.head[1]
+            self.head = self.head[0] - self.side_of_square, self.head[1]
         elif self.direction == 'UP':
-            self.head = self.head[0], self.head[1] - self.a
+            self.head = self.head[0], self.head[1] - self.side_of_square
         elif self.direction == 'DOWN':
-            self.head = self.head[0], self.head[1] + self.a
-        self.body.insert(0, Square(self.head[0], self.head[1], self.a, self.color))
+            self.head = self.head[0], self.head[1] + self.side_of_square
+        self.body.insert(0, Square(self.head[0], self.head[1], self.side_of_square, self.color))
 
     def delete_tail(self):
         self.body.pop()
@@ -92,9 +92,9 @@ class Snake:
 
 
 class TextObject:
-    def __init__(self, x, y, text_func, color, font_name, font_size):
+    def __init__(self, x, y, color, text, font_name, font_size):
         self.pos = (x, y)
-        self.text_func = text_func
+        self.text = text
         self.color = color
         self.font = pygame.font.SysFont(font_name, font_size)
 
@@ -103,12 +103,12 @@ class TextObject:
         return text_surface
 
     def draw(self, surface):
-        text_surface = self.get_surface(self.text_func)
+        text_surface = self.get_surface(self.text)
         pos = self.pos
         surface.blit(text_surface, pos)
 
-    def get_update(self):
-        pass
+    def get_update(self, text):
+        self.text = text
 
 
 def crash_into_wall(w, h, snake):
@@ -148,7 +148,7 @@ class Game:
     def __init__(self, caption, width, height, frame_rate):
         pygame.init()
         self.score = 0
-        self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
+        self.text = TextObject(0, 0, (0, 0, 0), 'Score: {}'.format(self.score), 'monaco', 36)
         self.width = width
         self.height = height
         self.side_of_square = 15
@@ -188,7 +188,7 @@ class Game:
         if self.bonus_apple:
             if self.objects[0].head == (self.objects[-1].x, self.objects[-1].y):
                 self.score += 3
-                self.text = self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
+                self.text.get_update('Score: {}'.format(self.score))
                 self.objects[0].update()
                 self.objects.pop()
                 flag = True
@@ -199,7 +199,7 @@ class Game:
                 self.bonus_apple = False
         if self.objects[0].head == (self.objects[1].x, self.objects[1].y):
             self.score += 1
-            self.text = self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
+            self.text.get_update('Score: {}'.format(self.score))
             self.frame_rate += 0.5
             self.objects[0].update()
             self.objects[1].update(self.width, self.height)
