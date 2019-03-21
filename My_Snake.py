@@ -22,8 +22,8 @@ class GameObject:
 
 
 class Square(GameObject):
-    def __init__(self, x, y, a, color):
-        GameObject.__init__(self, x, y, a, a)
+    def __init__(self, x, y, side_of_square, color):
+        GameObject.__init__(self, x, y, side_of_square, side_of_square)
         self.color = color
 
     def draw(self, surface):
@@ -31,35 +31,35 @@ class Square(GameObject):
 
 
 class Apple(GameObject):
-    def __init__(self, x, y, a, color):
-        GameObject.__init__(self, x, y, a, a)
+    def __init__(self, x, y, side_of_square, color):
+        GameObject.__init__(self, x, y, side_of_square, side_of_square)
         self.color = color
-        self.a = a
+        self.side_of_square = side_of_square
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.bounds)
 
     def update(self, w, h):
-        self.x = random.randrange(0, w//self.a)*self.a
-        self.y = random.randrange(0, h//self.a)*self.a
-        self.bounds = Rect(self.x, self.y, self.a, self.a)
+        self.x = random.randrange(0, w//self.side_of_square)*self.side_of_square
+        self.y = random.randrange(0, h//self.side_of_square)*self.side_of_square
+        self.bounds = Rect(self.x, self.y, self.side_of_square, self.side_of_square)
 
 
-class Bonus_Apple(Apple):
-    def __init__(self, x, y, a, color):
-        Apple.__init__(self, x, y, a, color)
+class Bonus(Apple):
+    def __init__(self, x, y, side_of_square, color):
+        Apple.__init__(self, x, y, side_of_square, color)
         self.time = time.time()
         self.max_time = 5
 
 
 class Snake:
-    def __init__(self, list_of_pos, a, direction, color):
+    def __init__(self, list_of_pos, side_of_square, direction, color):
         self.head = list_of_pos[0]
         self.body = []
-        self.a = a
+        self.a = side_of_square
         self.color = color
         for i in list_of_pos:
-            self.body.append(Square(i[0], i[1], a, self.color))
+            self.body.append(Square(i[0], i[1], side_of_square, self.color))
         self.direction = direction
 
     def draw(self, surface):
@@ -102,7 +102,7 @@ class TextObject:
         text_surface = self.font.render(text, False, self.color)
         return text_surface
 
-    def draw(self, surface, centralized=False):
+    def draw(self, surface):
         text_surface = self.get_surface(self.text_func)
         pos = self.pos
         surface.blit(text_surface, pos)
@@ -132,12 +132,12 @@ def check_problems(w, h, objects):
     return True
 
 
-def gameOver(Surface):
-    myFont = pygame.font.SysFont('monaco', 108)
-    GOsurf = myFont.render("Game Over", True, (255, 0, 0))
-    GOrect = GOsurf.get_rect()
-    GOrect.midtop = (400, 25)
-    Surface.blit(GOsurf, GOrect)
+def game_over(surface):
+    my_font = pygame.font.SysFont('monaco', 108)
+    go_surf = my_font.render("Game Over", True, (255, 0, 0))
+    go_rect = go_surf.get_rect()
+    go_rect.midtop = (400, 25)
+    surface.blit(go_surf, go_rect)
     pygame.display.flip()
     time.sleep(4)
     pygame.quit()
@@ -151,10 +151,13 @@ class Game:
         self.text = TextObject(0, 0, 'Score: {}'.format(self.score), (0, 0, 0), 'monaco', 36)
         self.width = width
         self.height = height
-        self.a = 15
-        body_snake = [((width//100)*self.a - self.a * i, (height//200)*self.a) for i in range(3)]
-        self.objects = [Snake(body_snake, self.a, 'RIGHT', (0, 255, 0)),
-                        Apple(random.randrange(0, width//self.a)*self.a, random.randrange(0, height//self.a)*self.a, self.a, (255, 0, 0))]
+        self.side_of_square = 15
+        body_snake = [((width//100)*self.side_of_square - self.side_of_square * i, (height//200)*self.side_of_square)
+                      for i in range(3)]
+        self.objects = [Snake(body_snake, self.side_of_square, 'RIGHT', (0, 255, 0)),
+                        Apple(random.randrange(0, width//self.side_of_square)*self.side_of_square,
+                              random.randrange(0, height//self.side_of_square)*self.side_of_square,
+                              self.side_of_square, (255, 0, 0))]
         self.surface = pygame.display.set_mode((width, height))
         self.frame_rate = frame_rate
         self.game_over = False
@@ -213,14 +216,16 @@ class Game:
         if time.time() - self.time > 25:
             self.time = time.time()
             self.bonus_apple = True
-            self.objects.append(Bonus_Apple(random.randrange(0, self.width//self.a)*self.a, random.randrange(0, self.height//self.a)*self.a, self.a, (255, 255, 0)))
+            self.objects.append(Bonus(random.randrange(0, self.width // self.side_of_square) * self.side_of_square,
+                                      random.randrange(0, self.height//self.side_of_square) * self.side_of_square,
+                                      self.side_of_square, (255, 255, 0)))
 
     def run(self):
         while not self.game_over:
             self.surface.fill((244, 164, 96))
 
             if not check_problems(self.width, self.height, self.objects):
-                gameOver(self.surface)
+                game_over(self.surface)
                 break
 
             self.handle_events()
