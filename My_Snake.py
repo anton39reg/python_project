@@ -1,8 +1,8 @@
-import pygame
-import sys
 import random
+import sys
 import time
 
+import pygame
 from pygame.rect import Rect
 
 
