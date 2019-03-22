@@ -18,9 +18,6 @@ class GameObject:
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.bounds)
 
-    def update(self):
-        pass
-
 
 class Square(GameObject):
     def __init__(self, x, y, side_of_square, color):
@@ -122,9 +119,9 @@ def crash_himself(snake):
 
 
 def check_problems(w, h, objects):
-    if not crash_into_wall(w, h, objects[0]):
+    if not crash_into_wall(w, h, objects['Snake']):
         return False
-    if not crash_himself(objects[0]):
+    if not crash_himself(objects['Snake']):
         return False
     return True
 
@@ -132,9 +129,8 @@ def check_problems(w, h, objects):
 def game_over(surface):
     my_font = pygame.font.SysFont('monaco', 108)
     go_surf = my_font.render("Game Over", True, (255, 0, 0))
-    go_rect = go_surf.get_rect()
-    go_rect.position = (400, 25)
-    surface.blit(go_surf, go_rect)
+    position = (400, 25)
+    surface.blit(go_surf, position)
     pygame.display.flip()
     time.sleep(4)
     pygame.quit()
@@ -151,10 +147,10 @@ class Game:
         self.side_of_square = 15
         body_snake = [((width//100)*self.side_of_square - self.side_of_square * i, (height//200)*self.side_of_square)
                       for i in range(3)]
-        self.objects = [Snake(body_snake, self.side_of_square, 'RIGHT', (0, 255, 0)),
-                        Apple(random.randrange(0, width//self.side_of_square)*self.side_of_square,
-                              random.randrange(0, height//self.side_of_square)*self.side_of_square,
-                              self.side_of_square, (255, 0, 0), self.width, self.height)]
+        self.objects = {'Snake': Snake(body_snake, self.side_of_square, 'RIGHT', (0, 255, 0)),
+                        'Apple': Apple(random.randrange(0, width//self.side_of_square)*self.side_of_square,
+                                       random.randrange(0, height//self.side_of_square)*self.side_of_square,
+                                       self.side_of_square, (255, 0, 0), self.width, self.height)}
         self.surface = pygame.display.set_mode((width, height))
         self.frame_rate = frame_rate
         self.game_over = False
@@ -170,52 +166,52 @@ class Game:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    self.objects[0].new_direction('RIGHT')
+                    self.objects['Snake'].new_direction('RIGHT')
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    self.objects[0].new_direction('LEFT')
+                    self.objects['Snake'].new_direction('LEFT')
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
-                    self.objects[0].new_direction('UP')
+                    self.objects['Snake'].new_direction('UP')
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                    self.objects[0].new_direction('DOWN')
+                    self.objects['Snake'].new_direction('DOWN')
                 if event.key == pygame.K_ESCAPE:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     def update(self):
         flag = True
         if self.bonus_apple:
-            if self.objects[0].head == (self.objects[-1].x, self.objects[-1].y):
+            if self.objects['Snake'].head == (self.objects['Bonus'].x, self.objects['Bonus'].y):
                 self.score += 3
                 self.text.get_update('Score: {}'.format(self.score))
-                self.objects[0].update()
-                self.objects.pop()
+                self.objects['Snake'].update()
+                self.objects.pop('Bonus')
                 flag = True
                 self.bonus_apple = False
-            elif time.time() - self.objects[-1].time > self.objects[-1].max_time:
-                self.objects.pop()
+            elif time.time() - self.objects['Bonus'].time > self.objects['Bonus'].max_time:
+                self.objects.pop('Bonus')
                 self.time = time.time()
                 self.bonus_apple = False
-        if self.objects[0].head == (self.objects[1].x, self.objects[1].y):
+        if self.objects['Snake'].head == (self.objects['Apple'].x, self.objects['Apple'].y):
             self.score += 1
             self.text.get_update('Score: {}'.format(self.score))
             self.frame_rate += 0.5
-            self.objects[0].update()
-            self.objects[1].update()
+            self.objects['Snake'].update()
+            self.objects['Apple'].update()
         elif flag:
-            self.objects[0].update()
-            self.objects[0].delete_tail()
+            self.objects['Snake'].update()
+            self.objects['Snake'].delete_tail()
 
     def draw(self):
         for elem in self.objects:
-            elem.draw(self.surface)
+            self.objects[elem].draw(self.surface)
         self.text.draw(self.surface)
 
     def get_bonus_apple(self):
         if time.time() - self.time > 25:
             self.time = time.time()
             self.bonus_apple = True
-            self.objects.append(Bonus(random.randrange(0, self.width // self.side_of_square) * self.side_of_square,
-                                      random.randrange(0, self.height//self.side_of_square) * self.side_of_square,
-                                      self.side_of_square, (255, 255, 0), self.width, self.height))
+            self.objects['Bonus'] = Bonus(random.randrange(0, self.width // self.side_of_square) * self.side_of_square,
+                                          random.randrange(0, self.height//self.side_of_square) * self.side_of_square,
+                                          self.side_of_square, (255, 255, 0), self.width, self.height)
 
     def run(self):
         while not self.game_over:
