@@ -13,9 +13,10 @@ class GameObject:
         self.w = w
         self.h = h
         self.bounds = Rect(x, y, w, h)
+        self.color = (0, 0, 0)
 
     def draw(self, surface):
-        pass
+        pygame.draw.rect(surface, self.color, self.bounds)
 
     def update(self):
         pass
@@ -26,28 +27,24 @@ class Square(GameObject):
         GameObject.__init__(self, x, y, side_of_square, side_of_square)
         self.color = color
 
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.bounds)
-
 
 class Apple(GameObject):
-    def __init__(self, x, y, side_of_square, color):
+    def __init__(self, x, y, side_of_square, color, width_of_field, height_of_field):
         GameObject.__init__(self, x, y, side_of_square, side_of_square)
         self.color = color
         self.side_of_square = side_of_square
+        self.w = width_of_field
+        self.h = height_of_field
 
-    def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.bounds)
-
-    def update(self, w, h):
-        self.x = random.randrange(0, w//self.side_of_square)*self.side_of_square
-        self.y = random.randrange(0, h//self.side_of_square)*self.side_of_square
+    def update(self):
+        self.x = random.randrange(0, self.w//self.side_of_square)*self.side_of_square
+        self.y = random.randrange(0, self.h//self.side_of_square)*self.side_of_square
         self.bounds = Rect(self.x, self.y, self.side_of_square, self.side_of_square)
 
 
 class Bonus(Apple):
-    def __init__(self, x, y, side_of_square, color):
-        Apple.__init__(self, x, y, side_of_square, color)
+    def __init__(self, x, y, side_of_square, color, width_of_field, height_of_field):
+        Apple.__init__(self, x, y, side_of_square, color, width_of_field, height_of_field)
         self.time = time.time()
         self.max_time = 5
 
@@ -136,7 +133,7 @@ def game_over(surface):
     my_font = pygame.font.SysFont('monaco', 108)
     go_surf = my_font.render("Game Over", True, (255, 0, 0))
     go_rect = go_surf.get_rect()
-    go_rect.midtop = (400, 25)
+    go_rect.position = (400, 25)
     surface.blit(go_surf, go_rect)
     pygame.display.flip()
     time.sleep(4)
@@ -157,7 +154,7 @@ class Game:
         self.objects = [Snake(body_snake, self.side_of_square, 'RIGHT', (0, 255, 0)),
                         Apple(random.randrange(0, width//self.side_of_square)*self.side_of_square,
                               random.randrange(0, height//self.side_of_square)*self.side_of_square,
-                              self.side_of_square, (255, 0, 0))]
+                              self.side_of_square, (255, 0, 0), self.width, self.height)]
         self.surface = pygame.display.set_mode((width, height))
         self.frame_rate = frame_rate
         self.game_over = False
@@ -202,7 +199,7 @@ class Game:
             self.text.get_update('Score: {}'.format(self.score))
             self.frame_rate += 0.5
             self.objects[0].update()
-            self.objects[1].update(self.width, self.height)
+            self.objects[1].update()
         elif flag:
             self.objects[0].update()
             self.objects[0].delete_tail()
@@ -218,7 +215,7 @@ class Game:
             self.bonus_apple = True
             self.objects.append(Bonus(random.randrange(0, self.width // self.side_of_square) * self.side_of_square,
                                       random.randrange(0, self.height//self.side_of_square) * self.side_of_square,
-                                      self.side_of_square, (255, 255, 0)))
+                                      self.side_of_square, (255, 255, 0), self.width, self.height))
 
     def run(self):
         while not self.game_over:
