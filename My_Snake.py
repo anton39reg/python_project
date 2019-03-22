@@ -105,27 +105,6 @@ class TextObject:
         self.text = text
 
 
-def crash_into_wall(w, h, snake):
-    if snake.head[0] < 0 or snake.head[0] > w or snake.head[1] < 0 or snake.head[1] > h:
-        return False
-    return True
-
-
-def crash_himself(snake):
-    for i in snake.body[1:]:
-        if snake.head == (i.x, i.y):
-            return False
-    return True
-
-
-def check_problems(w, h, objects):
-    if not crash_into_wall(w, h, objects['Snake']):
-        return False
-    if not crash_himself(objects['Snake']):
-        return False
-    return True
-
-
 def game_over(surface):
     my_font = pygame.font.SysFont('monaco', 108)
     go_surf = my_font.render("Game Over", True, (255, 0, 0))
@@ -158,6 +137,25 @@ class Game:
         self.time = time.time()
         self.bonus_apple = False
         self.clock = pygame.time.Clock()
+
+    def check_problems(self):
+        if not self.crash_into_wall():
+            return False
+        if not self.crash_himself():
+            return False
+        return True
+
+    def crash_into_wall(self):
+        if self.objects['Snake'].head[0] < 0 or self.objects['Snake'].head[0] > self.width or\
+           self.objects['Snake'].head[1] < 0 or self.objects['Snake'].head[1] > self.height:
+            return False
+        return True
+
+    def crash_himself(self):
+        for i in self.objects['Snake'].body[1:]:
+            if self.objects['Snake'].head == (i.x, i.y):
+                return False
+        return True
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -217,7 +215,7 @@ class Game:
         while not self.game_over:
             self.surface.fill((244, 164, 96))
 
-            if not check_problems(self.width, self.height, self.objects):
+            if not self.check_problems():
                 game_over(self.surface)
                 break
 
