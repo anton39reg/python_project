@@ -234,5 +234,6 @@ class Game:
             self.clock.tick(self.frame_rate)
 
 
-a = Game('snake', 1280, 640, 10)
-a.run()
+if __name__ == "__main__":
+    a = Game('snake', 1280, 640, 10)
+    a.run()
