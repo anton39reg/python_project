@@ -17,6 +17,15 @@ class GameObject:
 
     """
     def __init__(self, x, y, w, h):
+        """
+
+        Args:
+            x(int): x coordinate
+            y(int): y coordinate
+            w(int): width of object
+            h(int): height of object
+
+        """
         self.x = x
         self.y = y
         self.w = w
@@ -42,6 +51,15 @@ class Square(GameObject):
 
     """
     def __init__(self, x, y, side_of_square, color):
+        """
+
+        Args:
+            x(int): x coordinate
+            y(int): y coordinate
+            side_of_square(int): size of square
+            color(tuple is a long 3): color of square
+
+        """
         GameObject.__init__(self, x, y, side_of_square, side_of_square)
         self.color = color
 
@@ -55,6 +73,17 @@ class Apple(GameObject):
 
     """
     def __init__(self, x, y, side_of_square, color, width_of_field, height_of_field):
+        """
+
+        Args:
+            x(int): x coordinate
+            y(int): y coordinate
+            side_of_square(int):
+            color(tuple is a long 3):
+            width_of_field(int):
+            height_of_field(int):
+
+        """
         GameObject.__init__(self, x, y, side_of_square, side_of_square)
         self.color = color
         self.side_of_square = side_of_square
@@ -86,6 +115,17 @@ class Bonus(Apple):
 
     """
     def __init__(self, x, y, side_of_square, color, width_of_field, height_of_field):
+        """
+
+        Args:
+            x(int): x coordinate
+            y(int): y coordinate
+            side_of_square(int):
+            color(tuple is a long 3):
+            width_of_field(int):
+            height_of_field(int):
+
+        """
         Apple.__init__(self, x, y, side_of_square, color, width_of_field, height_of_field)
         self.time = time.time()
         self.max_time = 5
@@ -105,6 +145,14 @@ class Snake:
 
     """
     def __init__(self, list_of_pos, side_of_square, direction, color):
+        """
+
+        Args:
+            list_of_pos(list with tuple): body coordinates
+            side_of_square(int):
+            direction(str):
+            color(tuple is a long 3):
+        """
         self.head = list_of_pos[0]
         self.body = []
         self.side_of_square = side_of_square
@@ -187,10 +235,20 @@ class TextObject:
         x(int), y(int): coordinates
         color(tuple is long 3): color of text
         font_name(str): font of text
-        font_size(int): size of font
+        font_size(int): size of text
 
     """
     def __init__(self, x, y, color, text, font_name, font_size):
+        """
+
+        Args:
+            x(int): x coordinate
+            y(int): y coordinate
+            color(tuple is a long 3):
+            text(str):
+            font_name(str): font of text
+            font_size(int): size of text
+        """
         self.pos = (x, y)
         self.text = text
         self.color = color
@@ -274,6 +332,14 @@ class Game:
 
     """
     def __init__(self, caption, width, height, frame_rate):
+        """
+
+        Args:
+            caption(str): name of the game
+            width(int): width of surface
+            height(int): height of surface
+            frame_rate(int): speed of the game
+        """
         pygame.init()
         self.score = 0
         self.text = TextObject(0, 0, (0, 0, 0), 'Score: {}'.format(self.score), 'monaco', 36)
