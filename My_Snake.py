@@ -10,27 +10,27 @@ class GameObject:
     """This is a basic class.
 
     Attributes:
-        x(int), y(int): object coordinates
-        w(int), h(int): size of object
+        x_coordinate(int), y_coordinate(int): object coordinates
+        width(int), height(int): size of object
         bounds(RectType): object
         color(tuple is long 3): object color
 
     """
-    def __init__(self, x, y, w, h):
+    def __init__(self, x_coordinate, y_coordinate, width, height):
         """
 
         Args:
-            x(int): x coordinate
-            y(int): y coordinate
-            w(int): width of object
-            h(int): height of object
+            x_coordinate(int): x coordinate
+            y_coordinate(int): y coordinate
+            width(int): width of object
+            height(int): height of object
 
         """
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        self.bounds = Rect(x, y, w, h)
+        self.x_coordinate = x_coordinate
+        self.y_coordinate = y_coordinate
+        self.width = width
+        self.height = height
+        self.bounds = Rect(x_coordinate, y_coordinate, width, height)
         self.color = (0, 0, 0)
 
     def draw(self, surface):
@@ -50,17 +50,17 @@ class Square(GameObject):
     """This is special square for drawing of snake.
 
     """
-    def __init__(self, x, y, side_of_square, color):
+    def __init__(self, x_coordinate, y_coordinate, side_of_square, color):
         """
 
         Args:
-            x(int): x coordinate
-            y(int): y coordinate
+            x_coordinate(int): x coordinate
+            y_coordinate(int): y coordinate
             side_of_square(int): size of square
             color(tuple is a long 3): color of square
 
         """
-        GameObject.__init__(self, x, y, side_of_square, side_of_square)
+        GameObject.__init__(self, x_coordinate, y_coordinate, side_of_square, side_of_square)
         self.color = color
 
 
@@ -72,19 +72,19 @@ class Apple(GameObject):
         side_of_square(int):
 
     """
-    def __init__(self, x, y, side_of_square, color, width_of_field, height_of_field):
+    def __init__(self, x_coordinate, y_coordinate, side_of_square, color, width_of_field, height_of_field):
         """
 
         Args:
-            x(int): x coordinate
-            y(int): y coordinate
+            x_coordinate(int): x coordinate
+            y_coordinate(int): y coordinate
             side_of_square(int):
             color(tuple is a long 3):
             width_of_field(int):
             height_of_field(int):
 
         """
-        GameObject.__init__(self, x, y, side_of_square, side_of_square)
+        GameObject.__init__(self, x_coordinate, y_coordinate, side_of_square, side_of_square)
         self.color = color
         self.side_of_square = side_of_square
         self.w = width_of_field
@@ -99,9 +99,9 @@ class Apple(GameObject):
             nothing
 
         """
-        self.x = random.randrange(0, self.w//self.side_of_square)*self.side_of_square
-        self.y = random.randrange(0, self.h//self.side_of_square)*self.side_of_square
-        self.bounds = Rect(self.x, self.y, self.side_of_square, self.side_of_square)
+        self.x_coordinate = random.randrange(0, self.w//self.side_of_square)*self.side_of_square
+        self.y_coordinate = random.randrange(0, self.h//self.side_of_square)*self.side_of_square
+        self.bounds = Rect(self.x_coordinate, self.y_coordinate, self.side_of_square, self.side_of_square)
 
 
 class Bonus(Apple):
@@ -114,19 +114,19 @@ class Bonus(Apple):
         max_time(int): max time of life
 
     """
-    def __init__(self, x, y, side_of_square, color, width_of_field, height_of_field):
+    def __init__(self, x_coordinate, y_coordinate, side_of_square, color, width_of_field, height_of_field):
         """
 
         Args:
-            x(int): x coordinate
-            y(int): y coordinate
+            x_coordinate(int): x coordinate
+            y_coordinate(int): y coordinate
             side_of_square(int):
             color(tuple is a long 3):
             width_of_field(int):
             height_of_field(int):
 
         """
-        Apple.__init__(self, x, y, side_of_square, color, width_of_field, height_of_field)
+        Apple.__init__(self, x_coordinate, y_coordinate, side_of_square, color, width_of_field, height_of_field)
         self.time = time.time()
         self.max_time = 5
 
@@ -397,7 +397,7 @@ class Game:
 
         """
         for i in self.objects['Snake'].body[1:]:
-            if self.objects['Snake'].head == (i.x, i.y):
+            if self.objects['Snake'].head == (i.x_coordinate, i.y_coordinate):
                 return False
         return True
 
@@ -437,7 +437,7 @@ class Game:
         """
         flag = True
         if self.bonus_apple:
-            if self.objects['Snake'].head == (self.objects['Bonus'].x, self.objects['Bonus'].y):
+            if self.objects['Snake'].head == (self.objects['Bonus'].x_coordinate, self.objects['Bonus'].y_coordinate):
                 self.score += 3
                 self.text.get_update('Score: {}'.format(self.score))
                 self.objects['Snake'].update()
@@ -448,7 +448,7 @@ class Game:
                 self.objects.pop('Bonus')
                 self.time = time.time()
                 self.bonus_apple = False
-        if self.objects['Snake'].head == (self.objects['Apple'].x, self.objects['Apple'].y):
+        if self.objects['Snake'].head == (self.objects['Apple'].x_coordinate, self.objects['Apple'].y_coordinate):
             self.score += 1
             self.text.get_update('Score: {}'.format(self.score))
             self.frame_rate += 0.5
