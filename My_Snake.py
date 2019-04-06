@@ -157,8 +157,8 @@ class Snake:
         self.body = []
         self.side_of_square = side_of_square
         self.color = color
-        for i in list_of_pos:
-            self.body.append(Square(i[0], i[1], side_of_square, self.color))
+        for pos in list_of_pos:
+            self.body.append(Square(pos[0], pos[1], side_of_square, self.color))
         self.direction = direction
 
     def draw(self, surface):
@@ -173,8 +173,8 @@ class Snake:
             nothing
 
         """
-        for i in self.body:
-            i.draw(surface)
+        for body_square in self.body:
+            body_square.draw(surface)
 
     def update(self):
         """
@@ -346,8 +346,9 @@ class Game:
         self.width = width
         self.height = height
         self.side_of_square = 15
+        self.default_length = 3
         body_snake = [((width//100)*self.side_of_square - self.side_of_square * i, (height//200)*self.side_of_square)
-                      for i in range(3)]
+                      for i in range(self.default_length)]
         self.objects = {'Snake': Snake(body_snake, self.side_of_square, 'RIGHT', (0, 255, 0)),
                         'Apple': Apple(random.randrange(0, width//self.side_of_square)*self.side_of_square,
                                        random.randrange(0, height//self.side_of_square)*self.side_of_square,
@@ -396,8 +397,8 @@ class Game:
             bool: True if all right, False if snake crashed himself
 
         """
-        for i in self.objects['Snake'].body[1:]:
-            if self.objects['Snake'].head == (i.x_coordinate, i.y_coordinate):
+        for body_square in self.objects['Snake'].body[1:]:
+            if self.objects['Snake'].head == (body_square.x_coordinate, body_square.y_coordinate):
                 return False
         return True
 
